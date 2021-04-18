@@ -16,6 +16,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/harmony-one/go-sdk/pkg/store"
 	hmyTypes "github.com/harmony-one/harmony/core/types"
+	"github.com/harmony-one/harmony/numeric"
 	stakingTypes "github.com/harmony-one/harmony/staking/types"
 
 	"github.com/spf13/viper"
@@ -55,7 +56,7 @@ func PrintResult(res interface{}) {
 // ListNetworks lists available network on the server
 func ListNetworks() (networks *types.NetworkListResponse, err error) {
 	var (
-		nodeURL string = viper.GetString("node_url")
+		nodeURL string = viper.GetString("server")
 	)
 	ctx := context.Background()
 	fetcherOpts := []fetcher.Option{
@@ -97,9 +98,56 @@ func GetNetwork() (network *types.NetworkIdentifier, err error) {
 	return network, nil
 }
 
+func NewTransferOperation(from, to, amount, currency string) ([]*types.Operation, error) {
+	amt, err := numeric.NewDecFromStr(amount)
+	if err != nil {
+		return nil, err
+	}
+	amountInOne := amt.Mul(oneAsDec)
+	return []*types.Operation{
+		{
+			OperationIdentifier: &types.OperationIdentifier{
+				Index: 0,
+			},
+			Type: opType,
+			Account: &types.AccountIdentifier{
+				Address: from,
+			},
+			Amount: &types.Amount{
+				Value: amountInOne.Neg().RoundInt().String(),
+				Currency: &types.Currency{
+					Symbol:   currency,
+					Decimals: 18,
+				},
+			},
+		},
+		{
+			OperationIdentifier: &types.OperationIdentifier{
+				Index: 1,
+			},
+			RelatedOperations: []*types.OperationIdentifier{
+				{
+					Index: 0,
+				},
+			},
+			Type: opType,
+			Account: &types.AccountIdentifier{
+				Address: to,
+			},
+			Amount: &types.Amount{
+				Value: amountInOne.RoundInt().String(),
+				Currency: &types.Currency{
+					Symbol:   currency,
+					Decimals: 18,
+				},
+			},
+		},
+	}, nil
+}
+
 func NewFetcher(ctx context.Context, network *types.NetworkIdentifier) (*fetcher.Fetcher, error) {
 
-	var nodeURL string = viper.GetString("node_url")
+	var nodeURL string = viper.GetString("server")
 
 	fetcherOpts := []fetcher.Option{
 		fetcher.WithTimeout(time.Duration(viper.GetInt("timeout")) * time.Second),

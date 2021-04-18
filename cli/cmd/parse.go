@@ -40,13 +40,15 @@ type ParseInput struct {
 var parseCmd = &cobra.Command{
 	Use:   "parse",
 	Short: "Sanity check",
-	Long: `called on both unsigned and signed transactions 
+	Long: `Called on both unsigned and signed transactions 
 	to understand the intent of the formulated transaction
 	
 	Usage:
-		parse <path to payloads response>
+		parse --from-file <path to json tx>
 	`,
-	Args: cobra.MinimumNArgs(1),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		cmd.MarkFlagRequired("from-file")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			network    *types.NetworkIdentifier
@@ -55,7 +57,7 @@ var parseCmd = &cobra.Command{
 			signed     bool
 			tx         string
 		)
-		pathToPayloads := args[0]
+		pathToPayloads := fromFile
 		filePayloads, err := os.Open(pathToPayloads)
 		if err != nil {
 			HandleError(err, "could not read payloads file:"+pathToPayloads, 0)
@@ -110,15 +112,5 @@ var parseCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(parseCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// parseCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// parseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	constructionCmd.AddCommand(parseCmd)
 }

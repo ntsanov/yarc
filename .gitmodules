@@ -1,0 +1,6 @@
+[submodule "mcl"]
+	path = mcl
+	url = https://github.com/harmony-one/mcl
+[submodule "bls"]
+	path = bls
+	url = https://github.com/harmony-one/bls

@@ -1,1 +1,3 @@
 .vscode
+scripts/.env
+cli/build

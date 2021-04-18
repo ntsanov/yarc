@@ -26,13 +26,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type HashResponse struct {
+type TransactionIdentifierResponse struct {
 	TransactionIdentifier *types.TransactionIdentifier `json:"transaction_identifier,omitempty"`
+	Metadata              map[string]interface{}       `json:"metadata,omitempty"`
 }
-
-var (
-	fromFile string
-)
 
 // hashCmd represents the hash command
 var hashCmd = &cobra.Command{
@@ -92,7 +89,7 @@ var hashCmd = &cobra.Command{
 			HandleError(fetchErr.Err, "could not retrieve transaction hash", 0)
 		}
 
-		resp := HashResponse{
+		resp := TransactionIdentifierResponse{
 			TransactionIdentifier: txIdentifier,
 		}
 
@@ -102,16 +99,5 @@ var hashCmd = &cobra.Command{
 }
 
 func init() {
-	hashCmd.Flags().StringVarP(&fromFile, "from-file", "i", "", "use json encoded file for input")
-	rootCmd.AddCommand(hashCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// hashCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// hashCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	constructionCmd.AddCommand(hashCmd)
 }

@@ -34,6 +34,12 @@ var cfgFile string
 // TODO set this from viper
 var ChainID = big.NewInt(2)
 
+var (
+	fromShard, toShard int
+	transactionFlag    string
+	blockFlag          string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "harmony_cli",
@@ -55,10 +61,6 @@ func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
-var (
-	fromShard, toShard int
-)
-
 func init() {
 	cobra.OnInitialize(initConfig)
 
@@ -72,19 +74,22 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	// Flags
-	rootCmd.PersistentFlags().IntVar(&fromShard, "from_shard", 0, "From shard")
-	rootCmd.PersistentFlags().IntVar(&toShard, "to_shard", 0, "To shard")
+	rootCmd.PersistentFlags().StringP("server", "s", "", "Server to query")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	viper.BindPFlag("from_shard", preprocessCmd.Flags().Lookup("from_shard"))
 	viper.BindPFlag("to_shard", preprocessCmd.Flags().Lookup("to_shard"))
+	viper.BindPFlag("server", rootCmd.PersistentFlags().Lookup("server"))
 	// Defaults
-	viper.SetDefault("node_url", "https://rosetta.s1.b.hmny.io")
+	viper.SetDefault("server", "https://rosetta.s0.b.hmny.io")
 	viper.SetDefault("timeout", 10)
 	viper.SetDefault("retries", 3)
 	viper.SetDefault("network_idx", 0)
+	viper.SetDefault("fee_multiplier", 1)
+	// Will used PASSPHRASE ENV if it is set and not used as argument
+	viper.BindEnv("passphrase")
 
 	if cfgFile != "" {
 		// Use config file from the flag.

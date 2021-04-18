@@ -26,22 +26,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type HashResponse struct {
-	TransactionIdentifier *types.TransactionIdentifier `json:"transaction_identifier,omitempty"`
-}
-
-var (
-	fromFile string
-)
-
-// hashCmd represents the hash command
-var hashCmd = &cobra.Command{
-	Use:   "hash",
-	Short: "Returns the transaction hash for a signed transaction",
+// submitCmd represents the submit command
+var submitCmd = &cobra.Command{
+	Use:   "submit",
+	Short: "Submits a pre-signed transaction to the node without waiting for the transaction to be finalized.",
 	Long: `
 	Usage:
-		hash --from-file <signed_transaction.json>
-		hash <transaction string>
+		submit --from-file <signed_transaction.json>
+		submit <transaction string>
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -82,7 +74,7 @@ var hashCmd = &cobra.Command{
 			HandleError(err, "could not create fetcher", 0)
 		}
 
-		txIdentifier, fetchErr := f.ConstructionHash(
+		txIdentifier, metadata, fetchErr := f.ConstructionSubmit(
 			ctx,
 			network,
 			tx,
@@ -92,8 +84,9 @@ var hashCmd = &cobra.Command{
 			HandleError(fetchErr.Err, "could not retrieve transaction hash", 0)
 		}
 
-		resp := HashResponse{
+		resp := TransactionIdentifierResponse{
 			TransactionIdentifier: txIdentifier,
+			Metadata:              metadata,
 		}
 
 		PrintResult(resp)
@@ -102,16 +95,5 @@ var hashCmd = &cobra.Command{
 }
 
 func init() {
-	hashCmd.Flags().StringVarP(&fromFile, "from-file", "i", "", "use json encoded file for input")
-	rootCmd.AddCommand(hashCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// hashCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// hashCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	constructionCmd.AddCommand(submitCmd)
 }
