@@ -1,4 +1,4 @@
-module harmony_cli
+module github.com/ntsanov/yarc
 
 go 1.16
 

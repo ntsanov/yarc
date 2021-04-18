@@ -1,4 +1,4 @@
-module github.com/ntsanov/harmony_cli/cli
+module github.com/ntsanov/yarc/cli
 
 go 1.16
 

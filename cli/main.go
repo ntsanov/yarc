@@ -20,7 +20,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/ntsanov/harmony_cli/cli/cmd"
+	"github.com/ntsanov/yarc/cli/cmd"
 	"github.com/spf13/viper"
 )
 
