@@ -18,7 +18,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"math/big"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -31,9 +30,6 @@ var ErrSelectedNetworkIndexOutOfRange = errors.New("selected network index out o
 
 var cfgFile string
 
-// TODO set this from viper
-var ChainID = big.NewInt(2)
-
 var (
 	fromShard, toShard int
 	transactionFlag    string
@@ -42,17 +38,8 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "harmony_cli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Use:   "yarc",
+	Short: "",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -74,16 +61,21 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	// Flags
-	rootCmd.PersistentFlags().StringP("server", "s", "", "Server to query")
+	rootCmd.PersistentFlags().StringP("node", "s", "https://rosetta.s0.b.hmny.io", "Server to query")
+	rootCmd.PersistentFlags().Int64("chain-id", 2, "Chain ID defaults to Testnet(2)")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	viper.BindPFlag("from_shard", preprocessCmd.Flags().Lookup("from_shard"))
 	viper.BindPFlag("to_shard", preprocessCmd.Flags().Lookup("to_shard"))
-	viper.BindPFlag("server", rootCmd.PersistentFlags().Lookup("server"))
+	viper.BindPFlag("node", rootCmd.PersistentFlags().Lookup("node"))
+	viper.BindPFlag("chain_id", rootCmd.PersistentFlags().Lookup("chain-id"))
+
 	// Defaults
-	viper.SetDefault("server", "https://rosetta.s0.b.hmny.io")
+	// Defaults to testnet
+	viper.SetDefault("chain_id", 2)
+	viper.SetDefault("node", "https://rosetta.s0.b.hmny.io")
 	viper.SetDefault("timeout", 10)
 	viper.SetDefault("retries", 3)
 	viper.SetDefault("network_idx", 0)

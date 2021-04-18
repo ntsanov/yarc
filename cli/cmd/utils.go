@@ -6,6 +6,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"errors"
+	"math/big"
 	"os"
 	"time"
 
@@ -56,7 +57,7 @@ func PrintResult(res interface{}) {
 // ListNetworks lists available network on the server
 func ListNetworks() (networks *types.NetworkListResponse, err error) {
 	var (
-		nodeURL string = viper.GetString("server")
+		nodeURL string = viper.GetString("node")
 	)
 	ctx := context.Background()
 	fetcherOpts := []fetcher.Option{
@@ -147,7 +148,7 @@ func NewTransferOperation(from, to, amount, currency string) ([]*types.Operation
 
 func NewFetcher(ctx context.Context, network *types.NetworkIdentifier) (*fetcher.Fetcher, error) {
 
-	var nodeURL string = viper.GetString("server")
+	var nodeURL string = viper.GetString("node")
 
 	fetcherOpts := []fetcher.Option{
 		fetcher.WithTimeout(time.Duration(viper.GetInt("timeout")) * time.Second),
@@ -211,6 +212,7 @@ func Signature(account *types.AccountIdentifier, passphrase string, tx hmyTypes.
 		},
 		SignatureType: types.EcdsaRecovery,
 	}
+	var ChainID = big.NewInt(viper.GetInt64("chain_id"))
 	switch orgTx := tx.(type) {
 	case *stakingTypes.StakingTransaction:
 		signer := stakingTypes.NewEIP155Signer(ChainID)

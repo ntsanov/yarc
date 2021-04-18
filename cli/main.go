@@ -18,14 +18,29 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/ntsanov/harmony_cli/cli/cmd"
+	"github.com/spf13/viper"
+)
+
+var (
+	version   string
+	commit    string
+	buildtime string
 )
 
 func main() {
+	// We need this for static builds
+	// Can't use musl because of dependencies and with gcc works only if
+	// libc versions match. This forces to use go native dns queries
+	os.Setenv("GODEBUG", "netdns=go")
 	// rosetta-sdk-go uses logger to print the error as well as returning it
 	// We use our own json error wrapper so we don't really need it. Might be
 	// useful to turn it on for debugging though
+	viper.Set("version", version)
+	viper.Set("commit", commit)
+	viper.Set("build-time:", buildtime)
 	log.SetOutput(ioutil.Discard)
 	cmd.Execute()
 }
