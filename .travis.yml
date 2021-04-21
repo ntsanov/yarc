@@ -13,7 +13,6 @@ env:
     - TO_ADDRESS=one1qtwpscs8kz2mqnkywsplz9cvpdngz6gnh45xrn
     - FROM_SHARD=0
     - TO_SHARD=0
-    -  AMOUNT=0.1
-    -  PASSPHRASE=
-    -  NODE=https://rosetta.s0.b.hmny.io
-    -  PRIVATE_KEY=d3099cbc46a3efbf7dd1e6c2884337bc6bd9707eb2270cd6abbd901c2ea465b6
+    - AMOUNT=0.1
+    - PASSPHRASE=
+    - NODE=https://rosetta.s0.b.hmny.io
