@@ -1,11 +1,13 @@
 #!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 ### Source env variables if .env exists
-if [ -f .env ]; then
-    source .env
+if [ -f ${DIR}/.env ]; then
+    source ${DIR}/.env
 fi
 
-APP=../cli/build/yarc
+
+APP=${DIR}/../cli/build/yarc
 TMP_PATH=./.tmp_res
 
 mkdir -p ${TMP_PATH}
