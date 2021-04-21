@@ -5,7 +5,7 @@ before_install:
 - docker pull harmonyone/main
 
 script:
-- docker run --rm -ti -v ${PWD}/cli:/workspace harmonyone/main make -C /workspace static
+- docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/cli:/workspace harmonyone/main make -C /workspace static
 - ./scripts/simple_tx_test.sh
 
  
