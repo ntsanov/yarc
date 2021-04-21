@@ -82,6 +82,7 @@ func initConfig() {
 	viper.SetDefault("fee_multiplier", 1)
 	// Will used PASSPHRASE ENV if it is set and not used as argument
 	viper.BindEnv("passphrase")
+	viper.BindEnv("private_key")
 
 	if cfgFile != "" {
 		// Use config file from the flag.

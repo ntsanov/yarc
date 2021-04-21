@@ -3,6 +3,7 @@ module github.com/ntsanov/yarc
 go 1.16
 
 require (
+	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/coinbase/rosetta-sdk-go v0.6.10
 	github.com/ethereum/go-ethereum v1.10.2
 	github.com/fatih/color v1.10.0

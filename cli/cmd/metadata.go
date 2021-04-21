@@ -24,6 +24,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type MetaResponse struct {
@@ -39,7 +40,7 @@ var metadataCmd = &cobra.Command{
 	Options need to be retrieved first by preprocess
 
 	Usage:
-		metadata --form-file <path_to_preprocess_response.json>	
+		metadata --form-file <path_to_preprocess_response.json>	[--passphrase]
 	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -48,6 +49,7 @@ var metadataCmd = &cobra.Command{
 			pubKey         *types.PublicKey
 			preprocessResp PreprocessResponse
 			ctx            = context.Background()
+			passphrase     = viper.GetString("passphrase")
 		)
 
 		optionsPath := fromFile
@@ -68,7 +70,7 @@ var metadataCmd = &cobra.Command{
 		}
 
 		address := preprocessResp.RequiredPublicKeys[0].Address
-		publicKey, err := GetPublicKey(address, "")
+		_, publicKey, err := GetKeys(address, passphrase)
 		if err != nil {
 			HandleError(err, "could not parse public key", 0)
 		}
@@ -114,5 +116,7 @@ var metadataCmd = &cobra.Command{
 }
 
 func init() {
+	metadataCmd.Flags().StringVar(&passphraseFlag, "passphrase", "", "passphrase for sender account")
+	viper.BindPFlag("passphrase", metadataCmd.Flags().Lookup("passphrase"))
 	constructionCmd.AddCommand(metadataCmd)
 }

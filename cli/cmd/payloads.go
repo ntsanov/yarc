@@ -24,6 +24,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type PayloadsResponse struct {
@@ -88,10 +89,11 @@ var payloadsCmd = &cobra.Command{
 			network    *types.NetworkIdentifier
 			ctx        = context.Background()
 			operations OperationsInput
+			passphrase = viper.GetString("passphrase")
 		)
 
 		address := fromAddress
-		publicKey, err := GetPublicKey(address, "")
+		_, publicKey, err := GetKeys(address, passphrase)
 		if err != nil {
 			HandleError(err, "could not parse public key", 0)
 		}
@@ -159,6 +161,8 @@ var payloadsCmd = &cobra.Command{
 }
 
 func init() {
+	payloadsCmd.Flags().StringVar(&passphraseFlag, "passphrase", "", "passphrase for sender account")
+	viper.BindPFlag("passphrase", payloadsCmd.Flags().Lookup("passphrase"))
 	payloadsCmd.Flags().IntVar(&fromShard, "from-shard", 0, "From shard")
 	payloadsCmd.Flags().IntVar(&toShard, "to-shard", 0, "To shard")
 	payloadsCmd.Flags().StringVar(&amountFlag, "amount", "0", "amount to send")

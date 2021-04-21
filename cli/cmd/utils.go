@@ -4,17 +4,20 @@ import (
 	"bytes"
 	"context"
 	"crypto/ecdsa"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"math/big"
 	"os"
 	"time"
 
+	"github.com/btcsuite/btcd/btcec"
 	"github.com/coinbase/rosetta-sdk-go/fetcher"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/fatih/color"
+	"github.com/harmony-one/go-sdk/pkg/common"
 	"github.com/harmony-one/go-sdk/pkg/store"
 	hmyTypes "github.com/harmony-one/harmony/core/types"
 	"github.com/harmony-one/harmony/numeric"
@@ -189,18 +192,47 @@ func DecodeWrappedTransaction(marshaledStr string) (*WrappedTransaction, hmyType
 	return wt, tx, err
 }
 
+// TODO make this a factory and set factory at start from flag/config
+func GetKeys(address, passphrase string) (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {
+	pkStr := viper.GetString("private_key")
+	if pkStr == "" {
+		ks, acct, err := store.UnlockedKeystore(address, passphrase)
+		if err != nil {
+			return nil, nil, err
+		}
+		_, key, err := ks.GetDecryptedKey(*acct, passphrase)
+		if err != nil {
+			return nil, nil, err
+		}
+		publicKey := key.PrivateKey.Public()
+		return key.PrivateKey, publicKey.(*ecdsa.PublicKey), nil
+	}
+	privateKeyBytes, err := hex.DecodeString(pkStr)
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(privateKeyBytes) != common.Secp256k1PrivateKeyBytesLength {
+		return nil, nil, common.ErrBadKeyLength
+	}
+	privateKey, publicKey := btcec.PrivKeyFromBytes(btcec.S256(), privateKeyBytes)
+	return privateKey.ToECDSA(), publicKey.ToECDSA(), nil
+
+}
+
 // Signature signs transaction and returns Signature ready to be used
 func Signature(account *types.AccountIdentifier, passphrase string, tx hmyTypes.PoolTransaction) (*types.Signature, error) {
-	ks, acct, err := store.UnlockedKeystore(account.Address, passphrase)
-	if err != nil {
-		return nil, err
-	}
-	_, key, err := ks.GetDecryptedKey(*acct, passphrase)
-	if err != nil {
-		return nil, err
-	}
-	publicKey := key.PrivateKey.Public()
-	compressedPublicKey := crypto.CompressPubkey(publicKey.(*ecdsa.PublicKey))
+	// ks, acct, err := store.UnlockedKeystore(account.Address, passphrase)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// _, key, err := ks.GetDecryptedKey(*acct, passphrase)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// publicKey := key.PrivateKey.Public()
+	privateKey, publicKey, err := GetKeys(account.Address, passphrase)
+	compressedPublicKey := crypto.CompressPubkey(publicKey)
+
 	signature := types.Signature{
 		PublicKey: &types.PublicKey{
 			Bytes:     compressedPublicKey,
@@ -223,7 +255,8 @@ func Signature(account *types.AccountIdentifier, passphrase string, tx hmyTypes.
 	default:
 		return nil, errors.New("unknown transaction type")
 	}
-	signedPayload, err := ks.SignHash(*acct, signature.SigningPayload.Bytes)
+	// signedPayload, err := ks.SignHash(*acct, signature.SigningPayload.Bytes)
+	signedPayload, err := crypto.Sign(signature.SigningPayload.Bytes, privateKey)
 	if err != nil {
 		return nil, err
 	}
@@ -231,16 +264,15 @@ func Signature(account *types.AccountIdentifier, passphrase string, tx hmyTypes.
 	return &signature, nil
 }
 
-// TODO make this a factory and set factory at start from flag/config
-func GetPublicKey(address, passphrase string) (*ecdsa.PublicKey, error) {
-	ks, acct, err := store.UnlockedKeystore(address, passphrase)
-	if err != nil {
-		return nil, err
-	}
-	_, key, err := ks.GetDecryptedKey(*acct, passphrase)
-	if err != nil {
-		return nil, err
-	}
-	publicKey := key.PrivateKey.Public()
-	return publicKey.(*ecdsa.PublicKey), nil
-}
+// func GetPublicKey(address, passphrase string) (*ecdsa.PublicKey, error) {
+// 	ks, acct, err := store.UnlockedKeystore(address, passphrase)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	_, key, err := ks.GetDecryptedKey(*acct, passphrase)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	publicKey := key.PrivateKey.Public()
+// 	return publicKey.(*ecdsa.PublicKey), nil
+// }

@@ -1,10 +1,15 @@
 #!/bin/bash
 
-source .env
+### Source env variables if .env exists
+if [ -f .env ]; then
+    source .env
+fi
+
 APP=../cli/build/yarc
 TMP_PATH=./.tmp_res
 
 mkdir -p ${TMP_PATH}
+
 
 # /construction/preprocess
 ${APP} con preprocess  \

@@ -21,6 +21,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // deriveCmd represents the derive command
@@ -29,17 +30,18 @@ var deriveCmd = &cobra.Command{
 	Short: "Returns the AccountIdentifier associated with a public key",
 	Long: `
 	Usage:
-		derive <address>`,
+		derive <address> [--passphrase]`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			network *types.NetworkIdentifier
-			pubKey  *types.PublicKey
-			ctx     = context.Background()
+			network    *types.NetworkIdentifier
+			pubKey     *types.PublicKey
+			ctx        = context.Background()
+			passphrase = viper.GetString("passphrase")
 		)
 
 		address := args[0]
-		publicKey, err := GetPublicKey(address, "")
+		_, publicKey, err := GetKeys(address, passphrase)
 		compressedPkey := crypto.CompressPubkey(publicKey)
 		// fmt.Println(hex.EncodeToString(compressedPkey))
 
@@ -82,6 +84,9 @@ var deriveCmd = &cobra.Command{
 }
 
 func init() {
+
+	deriveCmd.Flags().StringVar(&passphraseFlag, "passphrase", "", "passphrase for sender account")
+	viper.BindPFlag("passphrase", deriveCmd.Flags().Lookup("passphrase"))
 	constructionCmd.AddCommand(deriveCmd)
 
 	// Here you will define your flags and configuration settings.
