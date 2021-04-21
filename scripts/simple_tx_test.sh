@@ -29,7 +29,7 @@ fi
 echo "/construction/preprocess:SUCCESS"
 
 # /construction/metadata
-$PRIVATE_KEY=${PRIVATE_KEY} {APP} con metadata \
+PRIVATE_KEY=${PRIVATE_KEY} ${APP} con metadata \
     --node=${NODE} \
     --from-file ${TMP_PATH}/options.json > ${TMP_PATH}/meta.json
 if [ $? != 0 ]; then
