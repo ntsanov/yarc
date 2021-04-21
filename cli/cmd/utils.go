@@ -231,6 +231,9 @@ func Signature(account *types.AccountIdentifier, passphrase string, tx hmyTypes.
 	// }
 	// publicKey := key.PrivateKey.Public()
 	privateKey, publicKey, err := GetKeys(account.Address, passphrase)
+	if err != nil {
+		return nil, err
+	}
 	compressedPublicKey := crypto.CompressPubkey(publicKey)
 
 	signature := types.Signature{
