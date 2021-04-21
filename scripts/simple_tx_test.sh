@@ -111,6 +111,7 @@ if [ $? != 0 ]; then
 fi
 echo "/construction/submit:SUCCESS"
 
+echo ""
 echo "Transaction submit successful"
 echo "----------------------------------------------------------------------"
 cat ${TMP_PATH}/submit.json

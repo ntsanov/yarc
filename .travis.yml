@@ -1,11 +1,19 @@
 services:
-  - docker
-
+- docker
 before_install:
 - docker pull harmonyone/main
-
 script:
-- docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/cli:/workspace harmonyone/main make -C /workspace static
-- ./scripts/simple_tx_test.sh
-
- 
+- docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/cli:/workspace harmonyone/main make -C
+  /workspace static
+- "./scripts/simple_tx_test.sh"
+env:
+  global:
+    - secure: 1ccdyZL7uOlUZRQX13Jj3TKZhzRGmdzWtskoNsuUepuSXp0ULWt2ZXz0QTS/HBAXwTdCEsNT/CSNIsyRi4G8QZF25+IwwVatR4R1jcN4TSbzD1MKSW/WH25xbpLcZLyv5VATqAHrttX+REtragsg46CCUYUxugVWO6Rpve5WwEBiQn309bTTE5i8DhLZquDM43ZdHNHA+9+THnhtmDTiTFYc0QPTZMYdODhgxfwG5qMzrukQaDIfYCN0cAY9shfhT3IhKS8D8oih4oy8ZbYIyYBC5Csu1clchCDjNsNglSWGlaymKDuOs5UymFJfAmfLbA092CAWUMasi6SA4s/sXibH6I9Gn1X423D3UECVx451wIwkeidhsi7szYg69jycjieD3sRPEm703cvAZpqZchk93GYRtZMGFJlWb8Y6/JX2JuTCN+bPFw9bJxcIyPMrIxS3bKou5sUo7ZvJRhPXmjvUbFwCSJBQBKnqtZT65stEE/N+V1AdmdctAj31E6YtFs28xkfUJtRNZ7Ps4fB1DPJ0R6cI/UFXkOwj1iObWqnClfUksqyWcL14kAemgZZOCodEhv1lQuBKRRxGJpxNzQnDvMtUg3w3D9hrnOXA/lbGvQHOhx9ZF2xLlpFKMNN9IH4Q3ie0Z/DVNIJmWrZb8ZbTgpWYnvWUu8KIR/zdXpA=
+    - FROM_ADDRESS=one1geu4t54askw8ny7kuepfg5dmuxdm9cjdxfdwz9
+    - TO_ADDRESS=one1qtwpscs8kz2mqnkywsplz9cvpdngz6gnh45xrn
+    - FROM_SHARD=0
+    - TO_SHARD=0
+    -  AMOUNT=0.1
+    -  PASSPHRASE=
+    -  NODE=https://rosetta.s0.b.hmny.io
+    -  PRIVATE_KEY=d3099cbc46a3efbf7dd1e6c2884337bc6bd9707eb2270cd6abbd901c2ea465b6
