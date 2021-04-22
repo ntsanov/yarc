@@ -94,5 +94,5 @@ var balanceCmd = &cobra.Command{
 
 func init() {
 	balanceCmd.Flags().StringVar(&blockFlag, "block", "", "block by hash or index")
-	rootCmd.AddCommand(balanceCmd)
+	dataCmd.AddCommand(balanceCmd)
 }

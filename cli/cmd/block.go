@@ -24,14 +24,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	blockIdentifier *types.PartialBlockIdentifier
+)
+
 // blockCmd represents the block command
 var blockCmd = &cobra.Command{
 	Use:   "block",
 	Short: "Gets a block by its BlockIdentifier",
+	Args:  cobra.MinimumNArgs(1),
 	Long: `
 	Usage:
 
-	block --block <block hash or id> [--transaction <tx_hash>]`,
+	block [<block hash or id>] [--transaction <tx_hash>]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			network *types.NetworkIdentifier
@@ -47,13 +52,14 @@ var blockCmd = &cobra.Command{
 		if err != nil {
 			HandleError(err, "could not create fetcher", 0)
 		}
-		blockIdentifier := &types.PartialBlockIdentifier{}
 
-		if blockFlag != "" {
-			if strings.HasPrefix(blockFlag, "0x") {
-				blockIdentifier.Hash = &blockFlag
+		if len(args) > 0 {
+			block := args[0]
+			blockIdentifier = &types.PartialBlockIdentifier{}
+			if strings.HasPrefix(block, "0x") {
+				blockIdentifier.Hash = &block
 			} else {
-				blockIdx, err := strconv.ParseInt(blockFlag, 10, 64)
+				blockIdx, err := strconv.ParseInt(block, 10, 64)
 				if err != nil {
 					HandleError(err, "could not parse block id", 0)
 				}
@@ -76,7 +82,6 @@ var blockCmd = &cobra.Command{
 }
 
 func init() {
-	blockCmd.Flags().StringVar(&blockFlag, "block", "", "block by hash or index")
 	blockCmd.MarkFlagRequired("block")
 	dataCmd.AddCommand(blockCmd)
 }
