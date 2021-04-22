@@ -29,7 +29,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("version:", viper.GetString("version"))
 		fmt.Println("commit:", viper.GetString("commit"))
-		fmt.Println("build-time:", viper.GetString("build-time"))
+		fmt.Println("build-time:", viper.GetString("build_time"))
 	},
 }
 

@@ -1,13 +1,15 @@
 SHELL := /bin/bash
-version := $(shell git rev-list --count HEAD)
-commit := $(shell git describe --always --long --dirty)
-build-time=$(shell date -u "+%Y-%m-%dT%H:%M:%S")
+ifeq ($(VERSION),)
+	VERSION := $(shell git rev-list --count HEAD)
+endif
+ifeq ($(COMMIT),)
+	COMMIT := $(shell git describe --always --long --dirty)
+endif
+BUILDTIME=$(shell date -u "+%Y-%m-%dT%H:%M:%S")
 env := GO111MODULE=on
-ldflags := -X main.version=v${version} -X main.commit=${commit} -X main.buildtime=${buildtime}
+ldflags := -X main.version=v${VERSION} -X main.commit=${COMMIT} -X main.buildtime=${BUILDTIME}
 ldflags_static := $(ldflags) -w -extldflags '-static'
 cli = ./build/yarc
-version := $(shell git rev-list --count HEAD)
-commit := $(shell git describe --always --long --dirty)
 
 all:
 	go build -o $(cli) -ldflags="$(ldflags)"

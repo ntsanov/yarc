@@ -80,8 +80,9 @@ func initConfig() {
 	viper.SetDefault("retries", 3)
 	viper.SetDefault("network_idx", 0)
 	viper.SetDefault("fee_multiplier", 1)
-	// Will used PASSPHRASE ENV if it is set and not used as argument
+	// Will use PASSPHRASE ENV if it is set and not used as argument
 	viper.BindEnv("passphrase")
+	// Will use PRIVATE_KEY instead of store if set. Easier for testing
 	viper.BindEnv("private_key")
 
 	if cfgFile != "" {
@@ -94,7 +95,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".harmony_cli" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".harmony_cli")
+		viper.SetConfigName(".config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
