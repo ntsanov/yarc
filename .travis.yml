@@ -5,6 +5,7 @@ before_install:
 script:
 - docker run --rm -ti -v ${TRAVIS_BUILD_DIR}/cli:/workspace harmonyone/main make -C
   /workspace static
+- ./cli/build/yarc version
 - "./scripts/simple_tx_test.sh"
 env:
   global:
