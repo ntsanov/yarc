@@ -12,6 +12,7 @@ TMP_PATH=./.tmp_res
 
 mkdir -p ${TMP_PATH}
 
+${APP} version
 
 # /construction/preprocess
 ${APP} con preprocess  \
