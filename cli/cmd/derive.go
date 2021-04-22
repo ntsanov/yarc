@@ -42,12 +42,11 @@ var deriveCmd = &cobra.Command{
 
 		address := args[0]
 		_, publicKey, err := GetKeys(address, passphrase)
+		if err != nil {
+			HandleError(err, "could not get public key", 0)
+		}
 		compressedPkey := crypto.CompressPubkey(publicKey)
 		// fmt.Println(hex.EncodeToString(compressedPkey))
-
-		if err != nil {
-			HandleError(err, "could not parse public key", 0)
-		}
 
 		// harmony only uses secp256k1
 		// It will be better to set curvetype with a flag
@@ -84,18 +83,7 @@ var deriveCmd = &cobra.Command{
 }
 
 func init() {
-
 	deriveCmd.Flags().StringVar(&passphraseFlag, "passphrase", "", "passphrase for sender account")
 	viper.BindPFlag("passphrase", deriveCmd.Flags().Lookup("passphrase"))
 	constructionCmd.AddCommand(deriveCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// deriveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// deriveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

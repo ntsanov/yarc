@@ -95,7 +95,7 @@ var payloadsCmd = &cobra.Command{
 		address := fromAddress
 		_, publicKey, err := GetKeys(address, passphrase)
 		if err != nil {
-			HandleError(err, "could not parse public key", 0)
+			HandleError(err, "could not get public key", 0)
 		}
 		compressedPkey := crypto.CompressPubkey(publicKey)
 		if fromFile != "" {
