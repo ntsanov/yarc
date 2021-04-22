@@ -40,7 +40,7 @@ func main() {
 	// useful to turn it on for debugging though
 	viper.Set("version", version)
 	viper.Set("commit", commit)
-	viper.Set("build-time:", buildtime)
+	viper.Set("build_time", buildtime)
 	log.SetOutput(ioutil.Discard)
 	cmd.Execute()
 }
